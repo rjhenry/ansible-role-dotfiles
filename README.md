@@ -13,7 +13,7 @@ None.
 Available variables are listed below, along with default values (see `defaults/main.yml`):
 ```yaml
 dotfiles_repository_url: "ssh://git@gitlab.rickhenry.uk/rjh/dotfiles.git"
-dotfiles_repo_version: main
+dotfiles_repo_reference: main
 ```
 
 The git repository URL and branch/tag/commit hash to use for retrieving
