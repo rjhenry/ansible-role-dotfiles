@@ -26,6 +26,7 @@
   changed_when: false   # Don't ever claim it's changed anything
   check_mode: false   # Run command even if play is called with `--check`
   failed_when: false  # Don't ever claim it's failed
+  loop: "{{ dotfiles_files }}"
   register: existing_dotfile_info
 
 - name: >
@@ -42,7 +43,7 @@
   # corresponding output for the given item.
   # I think this will be slightly fragile when a file name contains an '@' sign
   # but that's a rarity, even moreso in dotfile management.
-  when: "'@' not item.stdout"
+  when: "'@' not in item.stdout"
 
 - name: Link dotfiles from repository to home directory
   ansible.builtin.file:
