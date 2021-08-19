@@ -1,0 +1,10 @@
+---
+dotfiles_repository_url: "git@gitlab.rickhenry.uk:rjh/dotfiles.git"
+dotfiles_repository_reference: main
+dotfiles_repository_accept_hostkey: false
+dotfiles_repository_local_destination: "~/.dotfiles"
+
+dotfiles_home: "~"
+dotfiles_files:
+  - .bashrc
+  - .gitconfig

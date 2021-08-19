@@ -1,0 +1,56 @@
+---
+- name: Ensure `git` is installed
+  ansible.builtin.package:
+    name: git
+    state: present
+  become: true
+
+- name: Ensure the dotfiles repository is cloned locally.
+  ansible.builtin.git:
+    repo: "{{ dotfiles_repository_url }}"	
+    dest: "{{ dotfiles_repository_local_path }}"
+    version: "{{ dotfiles_repository_version }}"
+    accept_hostkey: "{{ dotfiles_repository_accept_hostkey }}"
+  become: false
+
+# These particular tasks are stole- er, borrowed almost directly from Jeff
+# Geerling's.
+# I'm still not super sure on how they work, so expect this to be annotated as
+# time goes by.
+- name: Ensure all configured dotfiles are links
+  # This lists each file in the `dotfiles_files` list and appends it's type
+  # as a single-character marker. The important thing we're looking for here is
+  # a `@` sign, which means a symbolic link.
+  ansible.builtin.command: >
+    ls -F {{ dotfiles_home }}/{{ item }}
+  changed_when: false	# Don't ever claim it's changed anything
+  check_mode: false	# Run command even if play is called with `--check`
+  failed_when: false	# Don't ever claim it's failed
+  register: existing_dotfile_info
+
+- name: >
+    Remove any existing dotfiles if a replacement is being linked from ther
+    configured repository
+  ansible.builtin.file:
+    path: "{{ dotfiles_home }}/{{ dotfiles_files[index] }}"
+    state: absent
+  loop: "{{ existing_dotfile_info.results | flatten(levels=1) }}"
+  loop_control:
+    index_var: index
+    label: "{{ dotfiles_files[index] }}"
+  # When the magical '@' symbol - which marks a symlink - is not in the
+  # corresponding output for the given item.
+  # I think this will be slightly fragile when a file name contains an '@' sign 
+  # but that's a rarity, even moreso in dotfile management.
+  when: "'@' not item.stdout"
+
+- name: Link dotfiles from repository to home directory
+  ansible.builtin.file:
+    src: "{{ dotfiles_repository_local_path }}/{{ item }}"
+    dest: "{{ dotfiles_home }}/{{ item }}"
+    state: link
+    # No write to dissuade me from making changes without considering that it's
+    # supposed to be matched in VCS
+    mode: u=rX,go=rX
+  become: false
+  loop: "{{ dotfiles_files }}" 
