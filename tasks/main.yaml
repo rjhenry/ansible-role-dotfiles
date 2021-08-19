@@ -8,7 +8,7 @@
 - name: Ensure the dotfiles repository is cloned locally.
   ansible.builtin.git:
     repo: "{{ dotfiles_repository_url }}"	
-    dest: "{{ dotfiles_repository_local_path }}"
+    dest: "{{ dotfiles_repository_local_destination }}"
     version: "{{ dotfiles_repository_version }}"
     accept_hostkey: "{{ dotfiles_repository_accept_hostkey }}"
   become: false
@@ -46,7 +46,7 @@
 
 - name: Link dotfiles from repository to home directory
   ansible.builtin.file:
-    src: "{{ dotfiles_repository_local_path }}/{{ item }}"
+    src: "{{ dotfiles_repository_local_destination }}/{{ item }}"
     dest: "{{ dotfiles_home }}/{{ item }}"
     state: link
     # No write to dissuade me from making changes without considering that it's
