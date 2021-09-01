@@ -59,3 +59,10 @@ None
 
     - hosts: localhost roles:
 	- { role: rjhenry.dotfiles }
+
+## Contributing
+If you feel the need to contribute to this role, please create
+[issues](https://gitlab.rickhenry.uk/rjh/ansible-role-dotfiles/-/issues) on the
+project. If you have patches you'd like to submit, create a PR on GitHub, from
+where I'll pull those changes to GitLab.
+
