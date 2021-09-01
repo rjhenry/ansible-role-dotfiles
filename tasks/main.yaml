@@ -50,8 +50,10 @@
     src: "{{ dotfiles_repository_local_destination }}/{{ item }}"
     dest: "{{ dotfiles_home }}/{{ item }}"
     state: link
-    # No write to dissuade me from making changes without considering that it's
-    # supposed to be matched in VCS
-    mode: u=rX,go=rX
+    # No write would be nice, to dissuade me from making changes without
+    # considering that it's supposed to be matched in VCS. However, as there's
+    # things like "directories that need write access", it's simpler to just
+    # blindly allow write.
+    mode: u=rwX,go=rX
   become: false
   loop: "{{ dotfiles_files }}"
