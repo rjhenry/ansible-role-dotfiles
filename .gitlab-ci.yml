@@ -1,0 +1,33 @@
+---
+stages:
+  - validation
+  - push
+
+# Validate that all the YAML is good YAML, and all the Ansible is good Ansible
+yamllint:
+  stage: validation
+  image: pipelinecomponents/yamllint:latest
+  script:
+    - yamllint --version
+    - yamllint --strict .
+
+ansible-lint:
+  stage: validation
+  image: cytopia/ansible-lint:latest
+  script:
+    - ansible-lint */*.yaml
+
+# Push updated things to Ansible Galaxy
+ansible-galaxy:
+  stage: push
+  image: cytopia/ansible:latest-tools
+  script:
+    - >
+      ansible-galaxy role import --api-key "$ansible_galaxy_api_token"
+      rjhenry ansible-role-dotfiles
+  only:
+    # Only push to ansible-galaxy for a push to main/master, or for a tagged
+    # release.
+    - main
+    - master
+    - tags
